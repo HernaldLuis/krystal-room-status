@@ -1006,15 +1006,15 @@
 .supervisor-sheet-card strong{font-size:24px;display:block;margin-top:3px;}
 .supervisor-sheet-wrap{flex:1;min-height:0;overflow:auto;background:#fff;border:2px solid #000;border-radius:10px;}
 .supervisor-sheet-table{border-collapse:collapse;color:#000;background:#fff;width:max-content;min-width:100%;font-size:12px;table-layout:fixed;}
-.supervisor-sheet-table th{position:sticky;top:0;z-index:3;background:#f3f4f6;border:2px solid #000;padding:3px 4px;font-size:10px;text-align:center;font-weight:900;color:#000;}
-.supervisor-sheet-table td{border:1px solid #000;height:22px;padding:0;text-align:center;min-width:28px;color:#000;}
-.supervisor-sheet-table .sup-hab{font-weight:900;font-size:11px;padding:1px 2px;background:#fff;width:48px;min-width:48px;max-width:48px;}
+.supervisor-sheet-table th{position:sticky;top:0;z-index:3;background:#f3f4f6;border:2px solid #000;padding:3px 4px;font-size:10px;text-align:center;font-weight:600;color:#000;}
+.supervisor-sheet-table td{border:1px solid #000;height:22px;padding:0;text-align:center;min-width:40px;color:#000;}
+.supervisor-sheet-table .sup-hab{font-weight:500;font-size:11px;padding:1px 2px;background:#fff;width:48px;min-width:48px;max-width:48px;}
 .supervisor-sheet-table .sup-tipo{width:24px!important;min-width:24px!important;max-width:24px!important;}
-.supervisor-sheet-table .sup-asignacion{width:46px!important;min-width:46px!important;max-width:46px!important;background:#fff;}
+.supervisor-sheet-table .sup-asignacion{width:58px!important;min-width:58px!important;max-width:58px!important;background:#fff;}
 .supervisor-sheet-table .sup-blank{background:#fff!important;border-color:#000;height:22px;}
-.supervisor-sheet-table input{width:100%;height:21px;border:0;background:transparent;text-align:center;font-weight:900;font-size:10px;outline:none;color:#000;padding:0;}
-.supervisor-sheet-table .sup-tipo-input{width:22px!important;min-width:22px!important;max-width:22px!important;font-size:9px!important;letter-spacing:-.5px;}
-.supervisor-sheet-table .sup-asignado-input{width:46px!important;min-width:46px!important;max-width:46px!important;background:#fff;font-size:9px!important;}
+.supervisor-sheet-table input{width:100%;height:21px;border:0;background:transparent;text-align:center;font-weight:500;font-size:10px;outline:none;color:#000;padding:0;}
+.supervisor-sheet-table .sup-tipo-input{width:22px!important;min-width:22px!important;max-width:22px!important;font-size:9px!important;letter-spacing:0!important;}
+.supervisor-sheet-table .sup-asignado-input{width:58px!important;min-width:58px!important;max-width:58px!important;background:#fff;font-size:9px!important;}
 .supervisor-sheet-table .sup-asignado-input[value]:not([value=""]){background:#dcfce7;}
 .supervisor-sheet-note{color:var(--muted);font-size:12px;margin:0;}
 @media(max-width:900px){
@@ -1864,7 +1864,7 @@
           <input class="search" id="searchInput" oninput="debouncedRenderTable()" placeholder="Buscar habitación, huésped, status..." />
           <button class="btn secondary" onclick="openBuildingMap()">🏨 Mapa edificios</button>
           <button class="btn secondary" onclick="openRoleModal()">👥 Rol operativo</button>
-          <button class="btn secondary" onclick="openSupervisorSheet()">📋 Sábana supervisores</button>
+          <button class="btn secondary" onclick="openSupervisorSheet()">📋 Sábana de Supervisores</button>
         </div>
       </div>
 
@@ -4242,8 +4242,8 @@
   <div class="modal-box">
     <div class="modal-head">
       <div>
-        <h2>📋 Sábana supervisores</h2>
-        <p>Se construye bajo demanda desde el Catálogo de habitaciones real y cruza la camarista asignada desde el Task Sheet.</p>
+        <h2>📋 Sábana de Supervisores</h2>
+        <p>Vista correcta desde Catálogo: HAB, TIPO K/M, ST literal de columna 5 y camarista asignada del Task Sheet.</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><button class="btn" onclick="printSupervisorSheet()">🖨️ Imprimir</button><button class="btn secondary" onclick="closeSupervisorSheet()">Cerrar</button></div>
     </div>
@@ -5269,6 +5269,294 @@ function supervisorSheetCompactType(tipoHab){
   return '';
 }
 </script>
+
+
+
+<script>
+/* =========================================================
+   SÁBANA DE SUPERVISORES · MODALIDAD CORRECTA FINAL
+   Regla solicitada:
+   HAB        = catálogo columna 1
+   TIPO       = catálogo columna 2 → termina KS = K / termina DD = M
+   ST         = catálogo columna 5 literal: FU-M, OCUS, VA-L, VA-S, O-IN, PROC, etc.
+   CAMARISTA  = Task Sheet, primer nombre máximo 5 letras
+   SIN ASIGN. = -----
+   ========================================================= */
+(function(){
+  function supClean(v){
+    return String(v ?? '').replace(/\s+/g,' ').trim();
+  }
+
+  function supEscape(v){
+    return supClean(v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  }
+
+  function supTypeFromCatalogType(tipoRaw){
+    const t = supClean(tipoRaw).toUpperCase();
+    if(t.endsWith('KS') || t.endsWith('K')) return 'K';
+    if(t.endsWith('DD') || t.endsWith('D')) return 'M';
+    return '';
+  }
+
+  function supShortStaffName(fullName){
+    const text = supClean(fullName).toUpperCase();
+    if(!text) return '';
+    const parts = text.split(/\s+/).filter(Boolean);
+    // En el rol interno normalmente viene: APELLIDO APELLIDO NOMBRE...
+    // Si solo viene NOMBRE APELLIDO, usamos el primero.
+    const candidate = parts.length >= 3 ? parts[2] : parts[0];
+    return supClean(candidate).slice(0,5);
+  }
+
+  function supCatalogRowsFromRoomsObject(){
+    const list = [];
+    try{
+      if(typeof rooms !== 'undefined' && rooms && typeof rooms === 'object'){
+        Object.values(rooms).forEach(r => {
+          const hab = supClean(r && r.hab);
+          if(!hab) return;
+          const tipoRaw = supClean(r.thab || r.tHab || r.tipo || r.tipoHab || r.roomType || r.type || '');
+          const stRaw = supClean(r.statusCode || '');
+          list.push({
+            hab,
+            tipo: supTypeFromCatalogType(tipoRaw),
+            st: stRaw.toUpperCase()
+          });
+        });
+      }
+    }catch(e){}
+    return list;
+  }
+
+  function supCatalogRowsFromRawTextarea(){
+    const list = [];
+    try{
+      const raw = document.getElementById('rawCatalog')?.value || '';
+      raw.split(/\r?\n/).forEach(line => {
+        if(!line.trim()) return;
+        let cols = line.split('\t');
+        if(cols.length < 5) cols = line.trim().split(/\s{2,}/);
+        const hab = supClean(cols[0]);
+        const tipoRaw = supClean(cols[1]);
+        const stRaw = supClean(cols[4]);
+        if(!/^\d+[A-Za-z]?$/.test(hab)) return;
+        list.push({
+          hab,
+          tipo: supTypeFromCatalogType(tipoRaw),
+          st: stRaw.toUpperCase()
+        });
+      });
+    }catch(e){}
+    return list;
+  }
+
+  function supGetCatalogRows(){
+    let list = supCatalogRowsFromRoomsObject();
+    if(!list.length) list = supCatalogRowsFromRawTextarea();
+
+    // Mantiene el orden real del catálogo. Solo elimina duplicados si existieran.
+    const seen = new Set();
+    return list.filter(r => {
+      if(!r.hab || seen.has(r.hab)) return false;
+      seen.add(r.hab);
+      return true;
+    });
+  }
+
+  function supBuildAssignmentMap(){
+    const map = {};
+    try{
+      if(typeof getTaskAssignments !== 'function') return map;
+      const ass = getTaskAssignments();
+      if(!ass || !ass.targets) return map;
+
+      Object.values(ass.targets).forEach(target => {
+        if(!target || target.key === 'PENDING' || target.pending) return;
+        const shortName = supShortStaffName(target.nombre || target.name || target.id || '');
+        if(!shortName) return;
+
+        (target.rooms || []).forEach(room => {
+          let hab = '';
+          try{
+            if(typeof normalizeTaskRoom === 'function'){
+              const normalized = normalizeTaskRoom(room);
+              hab = supClean(normalized && normalized[0]);
+            }
+          }catch(e){}
+          if(!hab) hab = supClean(Array.isArray(room) ? room[0] : (room && (room.hab || room.room || room.numero)));
+          if(hab) map[hab] = shortName;
+        });
+      });
+    }catch(e){}
+    return map;
+  }
+
+  function supRowsPerColumn(total){
+    // Compacto para 350+ habitaciones sin ensanchar demasiado.
+    if(total > 300) return 44;
+    if(total > 220) return 40;
+    return 36;
+  }
+
+  window.renderSupervisorSheetFromCatalogOptimized = function(force){
+    const table = document.getElementById('supervisorSheetTable');
+    if(!table) return;
+    const theadRow = table.querySelector('thead tr');
+    const tbody = table.querySelector('tbody');
+    if(!theadRow || !tbody) return;
+
+    const catalogRows = supGetCatalogRows();
+    const assignments = supBuildAssignmentMap();
+    const rowsPerCol = supRowsPerColumn(catalogRows.length);
+    const colsCount = Math.max(1, Math.ceil(catalogRows.length / rowsPerCol));
+
+    theadRow.innerHTML = Array.from({length: colsCount}, () =>
+      '<th>HAB</th><th>TIPO</th><th>ST</th><th>CAMARISTA</th>'
+    ).join('');
+
+    const html = [];
+    for(let r=0; r<rowsPerCol; r++){
+      let tr = '<tr>';
+      for(let c=0; c<colsCount; c++){
+        const item = catalogRows[c * rowsPerCol + r];
+        if(item){
+          const cam = assignments[item.hab] || '-----';
+          tr += '<td class="sup-hab" data-label="HAB">'+supEscape(item.hab)+'</td>'+
+                '<td class="sup-tipo" data-label="TIPO">'+supEscape(item.tipo)+'</td>'+
+                '<td class="sup-status" data-label="ST">'+supEscape(item.st)+'</td>'+
+                '<td class="sup-asignacion" data-room="'+supEscape(item.hab)+'" data-label="CAMARISTA">'+supEscape(cam)+'</td>';
+        }else{
+          tr += '<td class="sup-blank"></td><td class="sup-blank"></td><td class="sup-blank"></td><td class="sup-blank"></td>';
+        }
+      }
+      tr += '</tr>';
+      html.push(tr);
+    }
+    tbody.innerHTML = html.join('');
+    updateSupervisorSheetSummary();
+  };
+
+  window.renderSupervisorSheetFromCatalog = window.renderSupervisorSheetFromCatalogOptimized;
+
+  window.updateSupervisorSheetFromTaskAssignments = function(){
+    renderSupervisorSheetFromCatalogOptimized(true);
+  };
+
+  window.updateSupervisorSheetStatuses = function(){
+    // No se traduce nada. ST siempre viene literal desde columna 5 del catálogo.
+    return;
+  };
+
+  window.updateSupervisorSheetSummary = function(){
+    const cells = Array.from(document.querySelectorAll('#supervisorSheetTable .sup-asignacion[data-room]'));
+    const staff = new Set();
+    let assigned = 0;
+    cells.forEach(cell => {
+      const v = supClean(cell.textContent);
+      if(v && v !== '-----'){
+        assigned++;
+        staff.add(v);
+      }
+    });
+    const total = cells.length;
+    const totalEl = document.getElementById('supervisorTotal');
+    const assignedEl = document.getElementById('supervisorAssigned');
+    const unassignedEl = document.getElementById('supervisorUnassigned');
+    const staffEl = document.getElementById('supervisorStaff');
+    if(totalEl) totalEl.textContent = total;
+    if(assignedEl) assignedEl.textContent = assigned;
+    if(unassignedEl) unassignedEl.textContent = total - assigned;
+    if(staffEl) staffEl.textContent = staff.size;
+  };
+
+  window.openSupervisorSheet = function(){
+    renderSupervisorSheetFromCatalogOptimized(true);
+    const modal = document.getElementById('supervisorSheetModal');
+    if(modal){
+      modal.classList.add('open');
+      modal.style.display = 'block';
+    }else if(typeof openModal === 'function'){
+      openModal('supervisorSheetModal');
+    }
+  };
+
+  window.closeSupervisorSheet = function(){
+    document.body.classList.remove('print-supervisor-sheet-mode');
+    const modal = document.getElementById('supervisorSheetModal');
+    if(modal){
+      modal.classList.remove('open');
+      modal.style.display = 'none';
+    }
+  };
+
+  window.filterSupervisorSheet = function(){
+    const q = supClean(document.getElementById('supervisorSheetSearch')?.value || '').toLowerCase();
+    document.querySelectorAll('#supervisorSheetTable tbody tr').forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  };
+
+  window.showSupervisorUnassigned = function(){
+    renderSupervisorSheetFromCatalogOptimized(true);
+    document.querySelectorAll('#supervisorSheetTable tbody tr').forEach(row => {
+      const cells = Array.from(row.querySelectorAll('.sup-asignacion[data-room]'));
+      row.style.display = cells.some(cell => supClean(cell.textContent) === '-----') ? '' : 'none';
+    });
+  };
+
+  window.showSupervisorAll = function(){
+    const search = document.getElementById('supervisorSheetSearch');
+    if(search) search.value = '';
+    document.querySelectorAll('#supervisorSheetTable tbody tr').forEach(row => row.style.display = '');
+  };
+
+  window.printSupervisorSheet = function(){
+    renderSupervisorSheetFromCatalogOptimized(true);
+    const modal = document.getElementById('supervisorSheetModal');
+    if(modal){
+      modal.classList.add('open');
+      modal.style.display = 'block';
+    }
+    document.body.classList.add('print-supervisor-sheet-mode');
+    setTimeout(() => window.print(), 200);
+  };
+})();
+</script>
+
+<style>
+/* Sábana de Supervisores · vista correcta HAB / TIPO / ST / CAMARISTA */
+#supervisorSheetModal .modal-box{max-width:98vw;height:calc(100vh - 34px);}
+#supervisorSheetModal .modal-body{overflow:hidden;}
+#supervisorSheetTable{width:100%!important;min-width:980px!important;border-collapse:collapse!important;table-layout:fixed!important;background:#fff!important;color:#000!important;}
+#supervisorSheetTable th{background:#e5e7eb!important;color:#000!important;border:1px solid #000!important;text-align:center!important;font-size:10px!important;font-weight:900!important;padding:4px 3px!important;position:sticky!important;top:0!important;z-index:3!important;}
+#supervisorSheetTable td{border:1px solid #000!important;color:#000!important;background:#fff!important;text-align:center!important;height:22px!important;padding:2px 3px!important;font-size:10px!important;font-weight:800!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+#supervisorSheetTable .sup-hab{width:48px!important;}
+#supervisorSheetTable .sup-tipo{width:24px!important;}
+#supervisorSheetTable .sup-status{width:42px!important;}
+#supervisorSheetTable .sup-asignacion{width:54px!important;}
+#supervisorSheetTable .sup-blank{background:#fff!important;border-color:#000!important;}
+#supervisorSheetTable input{display:none!important;}
+@media print{
+  body.print-supervisor-sheet-mode > :not(#supervisorSheetModal){display:none!important;}
+  body.print-supervisor-sheet-mode{background:#fff!important;color:#000!important;padding:0!important;margin:0!important;overflow:visible!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetModal{position:absolute!important;left:0!important;top:0!important;width:100%!important;display:block!important;padding:0!important;margin:0!important;background:#fff!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetModal .modal-head,
+  body.print-supervisor-sheet-mode #supervisorSheetModal .supervisor-sheet-toolbar{display:none!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetModal .modal-box,
+  body.print-supervisor-sheet-mode #supervisorSheetModal .modal-body{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:#fff!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-summary{grid-template-columns:repeat(4,1fr)!important;gap:2mm!important;margin:2mm 4mm!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-card{border:1px solid #000!important;border-radius:0!important;background:#fff!important;color:#000!important;padding:1.5mm!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-card small{color:#333!important;font-size:7px!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-card strong{font-size:12px!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-note{display:block!important;color:#000!important;font-size:8px!important;margin:1.5mm 4mm!important;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-wrap{overflow:visible!important;border:0!important;border-radius:0!important;max-height:none!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetTable{font-size:6.7px!important;width:100%!important;min-width:0!important;table-layout:fixed!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetTable th{position:static!important;font-size:6px!important;padding:1px!important;border:1px solid #000!important;background:#e5e7eb!important;color:#000!important;}
+  body.print-supervisor-sheet-mode #supervisorSheetTable td{height:12px!important;font-size:6.3px!important;min-width:0!important;border:1px solid #000!important;padding:0!important;}
+  @page{size:letter landscape;margin:4mm;}
+}
+</style>
 
 </body>
 </html>
