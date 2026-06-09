@@ -1042,13 +1042,140 @@
   body.print-supervisor-sheet-mode .supervisor-sheet-table .sup-tipo,
   body.print-supervisor-sheet-mode .supervisor-sheet-table .sup-asignacion{width:auto!important;min-width:0!important;max-width:none!important;}
   body.print-supervisor-sheet-mode .supervisor-sheet-table input{height:12px!important;font-size:6.5px!important;padding:0!important;min-width:0!important;max-width:none!important;}
-  @page{size:letter landscape;margin:4mm;}
+  @page{size:letter portrait;margin:5mm;}
 }
 
 
     /* OPTIMIZACIÓN V3 · reduce repintados del Task Sheet sin cambiar la lógica */
     .section-card{contain:layout paint;}
     .room-chip{will-change:transform;}
+
+
+/* MINIBARES WIDTH FIX */
+.minibar-sheet table{width:100%!important;table-layout:fixed!important;}
+.minibar-sheet th,.minibar-sheet td{padding:1px!important;font-size:10px!important;}
+.minibar-sheet th:nth-child(1),.minibar-sheet td:nth-child(1){width:26px!important;}
+.minibar-sheet th:nth-child(2),.minibar-sheet td:nth-child(2){width:52px!important;}
+.minibar-sheet th:nth-child(3),.minibar-sheet td:nth-child(3){width:56px!important;}
+.minibar-sheet th:nth-child(4),.minibar-sheet td:nth-child(4){width:62px!important;}
+.minibar-sheet th:nth-child(n+5):nth-child(-n+14),
+.minibar-sheet td:nth-child(n+5):nth-child(-n+14){width:42px!important;}
+.minibar-sheet th:last-child,.minibar-sheet td:last-child{width:90px!important;}
+
+
+/* V7 PRINT OPTIMIZATION */
+@media print{
+  @page{size:letter portrait;margin:4mm;}
+  .minibar-sheet{width:100%!important;overflow:visible!important;}
+  .minibar-sheet table{
+      width:100%!important;
+      table-layout:fixed!important;
+      border-collapse:collapse!important;
+  }
+  .minibar-sheet th,
+  .minibar-sheet td{
+      font-size:8.5px!important;
+      padding:1px!important;
+      white-space:nowrap!important;
+      overflow:hidden!important;
+      text-overflow:clip!important;
+  }
+
+  .minibar-sheet th:nth-child(1), .minibar-sheet td:nth-child(1){width:20px!important;}
+  .minibar-sheet th:nth-child(2), .minibar-sheet td:nth-child(2){width:42px!important;}
+  .minibar-sheet th:nth-child(3), .minibar-sheet td:nth-child(3){width:50px!important;}
+  .minibar-sheet th:nth-child(4), .minibar-sheet td:nth-child(4){width:52px!important;}
+
+  .minibar-sheet th:nth-child(n+5):nth-child(-n+14),
+  .minibar-sheet td:nth-child(n+5):nth-child(-n+14){
+      width:34px!important;
+  }
+
+  .minibar-sheet th:last-child,
+  .minibar-sheet td:last-child{
+      width:70px!important;
+  }
+
+  thead{display:table-header-group!important;}
+  tr{page-break-inside:avoid!important;}
+}
+
+
+@media print{
+  .minibar-sheet table{width:100%!important;table-layout:fixed!important;}
+  .minibar-sheet th,.minibar-sheet td{
+    font-size:7px!important;
+    padding:0!important;
+  }
+
+  .minibar-sheet th:nth-child(1),.minibar-sheet td:nth-child(1){width:16px!important;}
+  .minibar-sheet th:nth-child(2),.minibar-sheet td:nth-child(2){width:34px!important;}
+  .minibar-sheet th:nth-child(3),.minibar-sheet td:nth-child(3){width:42px!important;}
+  .minibar-sheet th:nth-child(4),.minibar-sheet td:nth-child(4){width:42px!important;}
+
+  .minibar-sheet th:nth-child(n+5):nth-child(-n+14),
+  .minibar-sheet td:nth-child(n+5):nth-child(-n+14){
+      width:26px!important;
+      min-width:26px!important;
+      max-width:26px!important;
+  }
+
+  .minibar-sheet th:last-child,
+  .minibar-sheet td:last-child{
+      width:38px!important;
+      min-width:38px!important;
+      max-width:38px!important;
+  }
+}
+
+
+@media print{
+.minibar-sheet{transform:none!important;}
+.minibar-sheet table{width:100%!important;table-layout:fixed!important;}
+
+.minibar-sheet th,
+.minibar-sheet td{
+font-size:6px!important;
+padding:0!important;
+line-height:1!important;
+}
+
+.minibar-sheet th:nth-child(1),.minibar-sheet td:nth-child(1){width:12px!important;}
+.minibar-sheet th:nth-child(2),.minibar-sheet td:nth-child(2){width:28px!important;}
+.minibar-sheet th:nth-child(3),.minibar-sheet td:nth-child(3){width:34px!important;}
+.minibar-sheet th:nth-child(4),.minibar-sheet td:nth-child(4){width:34px!important;}
+
+.minibar-sheet th:nth-child(n+5):nth-child(-n+14),
+.minibar-sheet td:nth-child(n+5):nth-child(-n+14){
+width:20px!important;
+min-width:20px!important;
+max-width:20px!important;
+}
+
+.minibar-sheet th:last-child,
+.minibar-sheet td:last-child{
+width:22px!important;
+min-width:22px!important;
+max-width:22px!important;
+}
+}
+
+
+@media print{
+.minibar-sheet th:nth-child(n+5):nth-child(-n+14),
+.minibar-sheet td:nth-child(n+5):nth-child(-n+14){
+width:16px!important;
+min-width:16px!important;
+max-width:16px!important;
+}
+
+.minibar-sheet th:last-child,
+.minibar-sheet td:last-child{
+width:18px!important;
+min-width:18px!important;
+max-width:18px!important;
+}
+}
 
 </style>
 
@@ -1802,6 +1929,92 @@
 }
 </style>
 
+
+<style>
+/* Módulo nuevo · Reporte de Minibares B/N */
+.minibar-modal .modal-box{max-width:98vw;height:calc(100vh - 34px);display:flex;flex-direction:column;}
+.minibar-modal .modal-body{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+.minibar-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:rgba(2,6,23,.62);border:1px solid var(--line);border-radius:16px;padding:10px;}
+.minibar-toolbar .search{min-width:280px;flex:1;}
+.minibar-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.minibar-card{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:10px;}
+.minibar-card small{display:block;color:var(--muted);}
+.minibar-card strong{display:block;font-size:24px;margin-top:3px;}
+.minibar-note{font-size:12px;line-height:1.35;margin:0;color:#cbd5e1;}
+.minibar-sheet-wrap{flex:1;min-height:0;overflow:auto;background:#fff;color:#000;border:2px solid #000;border-radius:10px;padding:8px;}
+.minibar-print-header{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;border-bottom:2px solid #000;margin-bottom:6px;padding:0 2px 6px;color:#000;}
+.minibar-print-header h1{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:22px;letter-spacing:.3px;color:#000;}
+.minibar-print-header p{margin:3px 0 0;color:#000;font-size:12px;font-weight:800;}
+.minibar-print-legend{font-size:12px;font-weight:900;color:#000;white-space:nowrap;}
+.minibar-table{width:100%;min-width:1120px;border-collapse:collapse;table-layout:fixed;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:10px;}
+.minibar-table th,.minibar-table td{border:1px solid #000;color:#000;background:#fff;text-align:center;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 2px;height:24px;}
+.minibar-table th{position:sticky;top:0;z-index:3;background:#e5e7eb;color:#000;font-weight:900;font-size:9px;}
+.minibar-table td.ev{font-size:18px;font-weight:900;line-height:1;}
+.minibar-table td.hab{font-weight:900;font-size:11px;}
+.minibar-table td.status{font-weight:900;}
+.minibar-table td.fecha{font-weight:800;}
+.minibar-table td.blank{color:#fff;}
+.minibar-table th:nth-child(1),.minibar-table td:nth-child(1){width:34px;}
+.minibar-table th:nth-child(2),.minibar-table td:nth-child(2){width:54px;}
+.minibar-table th:nth-child(3),.minibar-table td:nth-child(3){width:58px;}
+.minibar-table th:nth-child(4),.minibar-table td:nth-child(4){width:62px;}
+.minibar-table th:nth-child(5),.minibar-table td:nth-child(5),
+.minibar-table th:nth-child(6),.minibar-table td:nth-child(6),
+.minibar-table th:nth-child(7),.minibar-table td:nth-child(7),
+.minibar-table th:nth-child(10),.minibar-table td:nth-child(10),
+.minibar-table th:nth-child(11),.minibar-table td:nth-child(11),
+.minibar-table th:nth-child(12),.minibar-table td:nth-child(12),
+.minibar-table th:nth-child(13),.minibar-table td:nth-child(13),
+.minibar-table th:nth-child(14),.minibar-table td:nth-child(14),
+.minibar-table th:nth-child(15),.minibar-table td:nth-child(15){width:48px;}
+.minibar-table th:nth-child(8),.minibar-table td:nth-child(8),
+.minibar-table th:nth-child(9),.minibar-table td:nth-child(9){width:56px;}
+.minibar-table th:nth-child(16),.minibar-table td:nth-child(16){width:120px;}
+@media(max-width:900px){.minibar-modal .modal-box{height:auto;min-height:92vh}.minibar-summary{grid-template-columns:repeat(2,1fr)}}
+@media print{
+  body.print-minibar-mode *{visibility:hidden!important;}
+  body.print-minibar-mode #minibarModal,
+  body.print-minibar-mode #minibarModal *{visibility:visible!important;}
+  body.print-minibar-mode .app{display:none!important;}
+  body.print-minibar-mode{background:#fff!important;color:#000!important;padding:0!important;margin:0!important;overflow:visible!important;}
+  body.print-minibar-mode #minibarModal{position:absolute!important;left:0!important;top:0!important;width:100%!important;display:block!important;padding:0!important;margin:0!important;background:#fff!important;}
+  body.print-minibar-mode #minibarModal .modal-head,
+  body.print-minibar-mode #minibarModal .minibar-toolbar,
+  body.print-minibar-mode #minibarModal .minibar-summary,
+  body.print-minibar-mode #minibarModal .minibar-note{display:none!important;}
+  body.print-minibar-mode #minibarModal .modal-box,
+  body.print-minibar-mode #minibarModal .modal-body,
+  body.print-minibar-mode .minibar-sheet-wrap{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:#fff!important;color:#000!important;}
+  body.print-minibar-mode .minibar-print-header{display:flex!important;margin:0 0 2mm 0!important;padding:0 0 1.5mm 0!important;border-bottom:1.5px solid #000!important;}
+  body.print-minibar-mode .minibar-print-header h1{font-size:15px!important;}
+  body.print-minibar-mode .minibar-print-header p,
+  body.print-minibar-mode .minibar-print-legend{font-size:8px!important;}
+  body.print-minibar-mode .minibar-table{width:100%!important;min-width:0!important;font-size:6.8px!important;table-layout:fixed!important;}
+  body.print-minibar-mode .minibar-table th{position:static!important;font-size:6.2px!important;padding:1px!important;background:#e5e7eb!important;color:#000!important;}
+  body.print-minibar-mode .minibar-table td{height:11px!important;font-size:6.5px!important;padding:0!important;border:1px solid #000!important;}
+  body.print-minibar-mode .minibar-table td.ev{font-size:10px!important;}
+  body.print-minibar-mode .minibar-table td.hab{font-size:6.8px!important;}
+  body.print-minibar-mode .minibar-table th:nth-child(16),body.print-minibar-mode .minibar-table td:nth-child(16){width:13%!important;}
+  @page{size:letter portrait;margin:5mm;}
+}
+</style>
+
+
+<style id="minibar-final-width-fix">
+/* MINIBARES FINAL WIDTH FIX */
+.minibar-table{width:100%!important;min-width:0!important;table-layout:fixed!important;}
+.minibar-table th,.minibar-table td{padding:2px 1px!important;overflow:hidden!important;text-overflow:clip!important;}
+.minibar-table th{font-size:7px!important;line-height:1.05!important;white-space:nowrap!important;}
+.minibar-table td{font-size:8px!important;height:18px!important;white-space:nowrap!important;}
+.minibar-table td.ev{font-size:11px!important;}
+.minibar-table td.hab{font-size:8px!important;}
+.minibar-table th:nth-child(1),.minibar-table td:nth-child(1){width:3%!important;}
+.minibar-table th:nth-child(2),.minibar-table td:nth-child(2){width:5%!important;}
+.minibar-table th:nth-child(3),.minibar-table td:nth-child(3){width:6.5%!important;}
+.minibar-table th:nth-child(4),.minibar-table td:nth-child(4){width:7%!important;}
+.minibar-table th:nth-child(n+5):nth-child(-n+15),.minibar-table td:nth-child(n+5):nth-child(-n+15){width:5.2%!important;}
+.minibar-table th:nth-child(16),.minibar-table td:nth-child(16){width:21.3%!important;}
+</style>
 </head>
 <body>
   <div class="app">
@@ -1865,6 +2078,7 @@
           <button class="btn secondary" onclick="openBuildingMap()">🏨 Mapa edificios</button>
           <button class="btn secondary" onclick="openRoleModal()">👥 Rol operativo</button>
           <button class="btn secondary" onclick="openSupervisorSheet()">📋 Sábana de Supervisores</button>
+          <button class="btn secondary" onclick="openMinibarSheet()">☕ Minibares</button>
         </div>
       </div>
 
@@ -2218,6 +2432,70 @@
   </div>
 
 
+
+
+  <!-- Módulo nuevo · Minibares -->
+  <div class="modal minibar-modal" id="minibarModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h2>☕ Reporte de Minibares</h2>
+          <p>Sábana automática con habitación, status, fecha y símbolos de movimiento para impresión en B/N.</p>
+        </div>
+        <button class="btn secondary" onclick="closeMinibarSheet()">Cerrar</button>
+      </div>
+      <div class="modal-body">
+        <div class="minibar-toolbar">
+          <input class="search" id="minibarSearch" placeholder="Buscar habitación, status o fecha..." oninput="renderMinibarSheet()" />
+          <button class="btn secondary" onclick="showMinibarOnlyMovements()">Solo ⇦ ⇨ ⇄</button>
+          <button class="btn secondary" onclick="showMinibarAll()">Ver todo</button>
+          <button class="btn" onclick="printMinibarSheet()">🖨️ Imprimir Minibares</button><button class="btn secondary" onclick="printMinibarSheet()">📄 Exportar PDF</button>
+        </div>
+
+        <div class="minibar-summary">
+          <div class="minibar-card"><small>Total habitaciones</small><strong id="minibarTotal">0</strong></div>
+          <div class="minibar-card"><small>⇦ Salidas</small><strong id="minibarDepartures">0</strong></div>
+          <div class="minibar-card"><small>⇨ Llegadas</small><strong id="minibarArrivals">0</strong></div>
+          <div class="minibar-card"><small>⇄ B2B</small><strong id="minibarBack">0</strong></div>
+        </div>
+
+        <p class="minibar-note"><b>Simbología:</b> ⇦ salida · ⇨ llegada · ⇄ salida/llegada · sin símbolo = habitación sin movimiento especial. Los campos de productos quedan en blanco para que Minibares anote el refill.</p>
+
+        <div class="minibar-sheet-wrap">
+          <div class="minibar-print-header">
+            <div>
+              <h1>REPORTE DE MINIBARES</h1>
+              <p id="minibarPrintDate">Fecha: --</p>
+            </div>
+            <div class="minibar-print-legend">⇦ Salida &nbsp;&nbsp; ⇨ Llegada &nbsp;&nbsp; ⇄ B2B</div>
+          </div>
+          <table class="minibar-table" id="minibarTable">
+            <thead>
+              <tr>
+                <th>EV</th>
+                <th>HAB</th>
+                <th>STATUS</th>
+                <th>FECHA</th>
+                <th>AGUA</th>
+                <th>TKR</th>
+                <th>TKL</th>
+                <th>PEPSI R</th>
+                <th>PEPSI L</th>
+                <th>MIRINDA</th>
+                <th>7UP</th>
+                <th>A. MIN.</th>
+                <th>CAFÉ R</th>
+                <th>CAFÉ D</th>
+                <th>COMPLE</th>
+                <th>COMENTARIOS</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const statusMap = {
@@ -5554,9 +5832,200 @@ function supervisorSheetCompactType(tipoHab){
   body.print-supervisor-sheet-mode #supervisorSheetTable{font-size:6.7px!important;width:100%!important;min-width:0!important;table-layout:fixed!important;}
   body.print-supervisor-sheet-mode #supervisorSheetTable th{position:static!important;font-size:6px!important;padding:1px!important;border:1px solid #000!important;background:#e5e7eb!important;color:#000!important;}
   body.print-supervisor-sheet-mode #supervisorSheetTable td{height:12px!important;font-size:6.3px!important;min-width:0!important;border:1px solid #000!important;padding:0!important;}
-  @page{size:letter landscape;margin:4mm;}
+  @page{size:letter portrait;margin:5mm;}
 }
 </style>
+
+
+<script>
+/* Módulo nuevo · Minibares
+   Fuente: rooms{} cargado desde Catálogo + Huéspedes en casa + Llegadas + Salidas.
+   B/N: usa símbolos ⇦ ⇨ ⇄ para que el equipo marque con resaltador sin depender de color. */
+(function(){
+  const MINIBAR_STATUSES = ['FU-M','OCUS','VA-L','VA-S','O-IN','PROC','OCUL','FU-S'];
+
+  function mbClean(v){
+    if(typeof clean === 'function') return clean(v);
+    return String(v || '').replace(/\s+/g,' ').trim();
+  }
+  function mbEsc(v){
+    if(typeof escapeHtml === 'function') return escapeHtml(String(v || ''));
+    return String(v || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function mbSortHab(a,b){
+    if(typeof sortRoomsForTask === 'function'){
+      return sortRoomsForTask([[a.hab,1],[b.hab,1]]).map(x=>x[0]).indexOf(a.hab) - sortRoomsForTask([[a.hab,1],[b.hab,1]]).map(x=>x[0]).indexOf(b.hab);
+    }
+    const aa = String(a.hab || '');
+    const bb = String(b.hab || '');
+    const pa = /^\d{3}[A-Z]?$/.test(aa) ? 20 : aa.startsWith('1') ? 10 : aa.startsWith('2') ? 30 : aa.startsWith('4') ? 40 : 90;
+    const pb = /^\d{3}[A-Z]?$/.test(bb) ? 20 : bb.startsWith('1') ? 10 : bb.startsWith('2') ? 30 : bb.startsWith('4') ? 40 : 90;
+    if(pa !== pb) return pa - pb;
+    return aa.localeCompare(bb, undefined, {numeric:true});
+  }
+  function mbFormatDate(v){
+    const raw = mbClean(v);
+    if(!raw) return '';
+    const d = (typeof parseDMY === 'function') ? parseDMY(raw) : null;
+    if(!d) return raw;
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}`;
+  }
+  function mbTodayShort(){
+    const d = new Date();
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}`;
+  }
+  function mbEventForRoom(r){
+    const flags = (typeof getStayFlags === 'function') ? getStayFlags(r) : {hasArrival:false,hasDeparture:false,isBack:false};
+    if(flags.isBack) return {symbol:'⇄', label:'B2B'};
+    if(flags.hasDeparture) return {symbol:'⇦', label:'Salida'};
+    if(flags.hasArrival) return {symbol:'⇨', label:'Llegada'};
+    return {symbol:'', label:''};
+  }
+  function mbDateForRoom(r, ev){
+    // Prioridad operativa: salida real/esperada. Para VS salida efectiva del día, si no queda fecha, usa fecha de hoy.
+    const status = String(r.statusCode || '').toUpperCase();
+    const raw = r.salida || (ev.symbol === '⇨' ? r.fechaLlegadaNueva : '') || '';
+    if(raw) return mbFormatDate(raw);
+    if(status === 'VA-S' && (ev.symbol === '⇦' || ev.symbol === '⇄' || r.hSalida)) return mbTodayShort();
+    if(ev.symbol === '⇦' || ev.symbol === '⇄') return mbTodayShort();
+    return '';
+  }
+  function getMinibarRows(){
+    const all = Object.values(window.rooms || rooms || {});
+    return all
+      .filter(r => r && /^\d+[A-Za-z]?$/.test(String(r.hab || '')))
+      .filter(r => MINIBAR_STATUSES.includes(String(r.statusCode || '').toUpperCase()) || r.nombre || r.movement || r.hSalida || (r.arrivalNames||[]).length)
+      .map(r => {
+        const ev = mbEventForRoom(r);
+        return {
+          hab:String(r.hab || ''),
+          status:String(r.statusCode || ''),
+          fecha:mbDateForRoom(r, ev),
+          symbol:ev.symbol,
+          eventLabel:ev.label,
+          searchText:`${r.hab} ${r.statusCode} ${r.status} ${r.salida} ${r.fechaLlegadaNueva} ${ev.label} ${ev.symbol}`.toLowerCase()
+        };
+      })
+      .sort(mbSortHab);
+  }
+  function mbSetText(id, value){ const el = document.getElementById(id); if(el) el.textContent = value; }
+  window.renderMinibarSheet = function(){
+    const tbody = document.querySelector('#minibarTable tbody');
+    if(!tbody) return;
+    const q = mbClean(document.getElementById('minibarSearch')?.value || '').toLowerCase();
+    const onlyMov = document.getElementById('minibarModal')?.dataset.onlyMovements === '1';
+    let rows = getMinibarRows();
+    const totals = rows.reduce((acc,r)=>{ if(r.symbol==='⇦') acc.dep++; else if(r.symbol==='⇨') acc.arr++; else if(r.symbol==='⇄') acc.back++; return acc; }, {dep:0,arr:0,back:0});
+    if(onlyMov) rows = rows.filter(r => r.symbol);
+    if(q) rows = rows.filter(r => r.searchText.includes(q));
+    mbSetText('minibarTotal', rows.length);
+    mbSetText('minibarDepartures', totals.dep);
+    mbSetText('minibarArrivals', totals.arr);
+    mbSetText('minibarBack', totals.back);
+    const dateEl = document.getElementById('minibarPrintDate');
+    if(dateEl) dateEl.textContent = `Fecha: ${typeof getPrintableDateLabel === 'function' ? getPrintableDateLabel() : new Date().toLocaleDateString('es-MX')}`;
+    if(!rows.length){
+      tbody.innerHTML = `<tr><td colspan="16" style="height:42px;font-weight:900;">Sin habitaciones para mostrar. Carga Catálogo, Huéspedes, Llegadas y Salidas.</td></tr>`;
+      return;
+    }
+    const blanks = Array.from({length:11}, ()=>'<td class="blank">.</td>').join('');
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="ev" title="${mbEsc(r.eventLabel)}">${mbEsc(r.symbol)}</td>
+        <td class="hab">${mbEsc(r.hab)}</td>
+        <td class="status">${mbEsc(r.status)}</td>
+        <td class="fecha">${mbEsc(r.fecha)}</td>
+        ${blanks}
+        <td></td>
+      </tr>
+    `).join('');
+  };
+  window.openMinibarSheet = function(){
+    const modal = document.getElementById('minibarModal');
+    if(modal){ modal.dataset.onlyMovements = modal.dataset.onlyMovements || '0'; }
+    if(typeof openModal === 'function') openModal('minibarModal');
+    renderMinibarSheet();
+  };
+  window.closeMinibarSheet = function(){
+    document.body.classList.remove('print-minibar-mode');
+    if(typeof closeModal === 'function') closeModal('minibarModal');
+  };
+  window.showMinibarOnlyMovements = function(){
+    const modal = document.getElementById('minibarModal');
+    if(modal) modal.dataset.onlyMovements = '1';
+    renderMinibarSheet();
+  };
+  window.showMinibarAll = function(){
+    const modal = document.getElementById('minibarModal');
+    if(modal) modal.dataset.onlyMovements = '0';
+    const search = document.getElementById('minibarSearch');
+    if(search) search.value = '';
+    renderMinibarSheet();
+  };
+  window.printMinibarSheet = function(){
+    renderMinibarSheet();
+    const source = document.querySelector('.minibar-sheet-wrap');
+    if(!source) return;
+
+    let content = source.innerHTML;
+    const colgroup = `
+      <colgroup>
+        <col style="width:3%"><col style="width:5%"><col style="width:6.5%"><col style="width:7%">
+        <col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%"><col style="width:5.2%">
+        <col style="width:21.3%">
+      </colgroup>`;
+    content = content.replace(/<table([^>]*)class="minibar-table"([^>]*)>/i, `<table$1class="minibar-table"$2>${colgroup}`);
+
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    if(!printWindow){
+      document.body.classList.add('print-minibar-mode');
+      setTimeout(() => window.print(), 200);
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Reporte de Minibares</title>
+<style>
+  @page{size:letter portrait;margin:4mm;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;}
+  .minibar-sheet-wrap{width:100%;padding:0;margin:0;background:#fff;color:#000;border:0;overflow:visible;}
+  .minibar-print-header{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;border-bottom:1.4px solid #000;margin:0 0 2mm 0;padding:0 0 1.2mm 0;color:#000;}
+  .minibar-print-header h1{margin:0;font-size:15px;line-height:1.1;letter-spacing:.1px;color:#000;}
+  .minibar-print-header p{margin:2px 0 0;color:#000;font-size:8px;font-weight:800;}
+  .minibar-print-legend{font-size:7.5px;font-weight:900;color:#000;white-space:nowrap;}
+  .minibar-table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed;background:#fff;color:#000;font-size:7px;}
+  .minibar-table thead{display:table-header-group;}
+  .minibar-table tr{page-break-inside:avoid;break-inside:avoid;}
+  .minibar-table th,.minibar-table td{border:1px solid #000;background:#fff;color:#000;text-align:center;vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:clip;padding:0;height:12px;line-height:1;}
+  .minibar-table th{font-size:6px;font-weight:900;height:15px;background:#f1f1f1;}
+  .minibar-table td{font-size:7px;font-weight:700;}
+  .minibar-table td.ev{font-size:10px;font-weight:900;}
+  .minibar-table td.hab{font-size:7px;font-weight:900;}
+  .minibar-table td.status{font-size:6.7px;font-weight:900;}
+  .minibar-table td.fecha{font-size:6.7px;font-weight:800;}
+  .minibar-table td.blank{color:#fff!important;}
+</style>
+</head>
+<body>
+  <div class="minibar-sheet-wrap">${content}</div>
+  <script>
+    window.onload = () => setTimeout(() => { window.print(); }, 250);
+    window.onafterprint = () => setTimeout(() => window.close(), 250);
+  <\/script>
+</body>
+</html>`);
+    printWindow.document.close();
+  };
+  window.addEventListener('afterprint', () => document.body.classList.remove('print-minibar-mode'));
+})();
+</script>
 
 </body>
 </html>
