@@ -1042,7 +1042,7 @@
   body.print-supervisor-sheet-mode .supervisor-sheet-table .sup-tipo,
   body.print-supervisor-sheet-mode .supervisor-sheet-table .sup-asignacion{width:auto!important;min-width:0!important;max-width:none!important;}
   body.print-supervisor-sheet-mode .supervisor-sheet-table input{height:12px!important;font-size:6.5px!important;padding:0!important;min-width:0!important;max-width:none!important;}
-  @page{size:letter portrait;margin:5mm;}
+  @page{size:letter landscape;margin:5mm;}
 }
 
 
@@ -1065,7 +1065,7 @@
 
 /* V7 PRINT OPTIMIZATION */
 @media print{
-  @page{size:letter portrait;margin:4mm;}
+  @page{size:letter landscape;margin:4mm;}
   .minibar-sheet{width:100%!important;overflow:visible!important;}
   .minibar-sheet table{
       width:100%!important;
@@ -1175,6 +1175,26 @@ width:18px!important;
 min-width:18px!important;
 max-width:18px!important;
 }
+}
+
+
+/* V12 · ORIENTACIÓN FINAL DE IMPRESIÓN
+   Task Sheet y Sábana de Supervisores = horizontal.
+   Minibares usa ventana propia vertical y no se toca. */
+@media print{
+  @page{size:letter landscape;margin:7mm;}
+  body.print-supervisor-sheet-mode .supervisor-sheet-wrap,
+  body.print-supervisor-sheet-mode .supervisor-sheet-table{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  body.print-supervisor-sheet-mode .supervisor-sheet-table{
+    table-layout:fixed!important;
+  }
+  #taskReportsModal .print-report-page{
+    width:100%!important;
+    max-width:100%!important;
+  }
 }
 
 </style>
@@ -1995,7 +2015,7 @@ max-width:18px!important;
   body.print-minibar-mode .minibar-table td.ev{font-size:10px!important;}
   body.print-minibar-mode .minibar-table td.hab{font-size:6.8px!important;}
   body.print-minibar-mode .minibar-table th:nth-child(16),body.print-minibar-mode .minibar-table td:nth-child(16){width:13%!important;}
-  @page{size:letter portrait;margin:5mm;}
+  @page{size:letter landscape;margin:5mm;}
 }
 </style>
 
@@ -5832,7 +5852,7 @@ function supervisorSheetCompactType(tipoHab){
   body.print-supervisor-sheet-mode #supervisorSheetTable{font-size:6.7px!important;width:100%!important;min-width:0!important;table-layout:fixed!important;}
   body.print-supervisor-sheet-mode #supervisorSheetTable th{position:static!important;font-size:6px!important;padding:1px!important;border:1px solid #000!important;background:#e5e7eb!important;color:#000!important;}
   body.print-supervisor-sheet-mode #supervisorSheetTable td{height:12px!important;font-size:6.3px!important;min-width:0!important;border:1px solid #000!important;padding:0!important;}
-  @page{size:letter portrait;margin:5mm;}
+  @page{size:letter landscape;margin:5mm;}
 }
 </style>
 
